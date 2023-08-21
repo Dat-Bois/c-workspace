@@ -1,10 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "lib/basicMath/basicMath.h"
+#include "lib/stupidMath/stupidMath.h"
+
+#ifndef CMAKEMACROSAMPLE
+    #define CMAKEMACROSAMPLE "NO SYSTEM NAME"
+#endif
 
 int main() {
-    printf("Hello World!\n");
-    sum(2.3,10.1);
+    srand(time(NULL));
+    printf("Hello World! You are using a %s\n", CMAKEMACROSAMPLE);
     return 0;
 }
