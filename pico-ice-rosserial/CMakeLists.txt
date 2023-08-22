@@ -4,12 +4,7 @@ project(CMakeTest)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-set(SOURCES cmakeTest.c 
-            lib/basicMath/basicMath.c
-            lib/basicMath/basicMath.h
-            lib/stupidMath/stupidMath.c
-            lib/stupidMath/stupidMath.h
-            )
+set(SOURCES cmakeTest.c)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES Darwin)
     add_definitions(-DCMAKEMACROSAMPLE="Apple MacOS")
