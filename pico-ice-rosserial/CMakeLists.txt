@@ -34,6 +34,7 @@ set(CMAKE_CXX_STANDARD 17)
 # setup executable
 set(SOURCES main.c)
 add_executable(pico_ros_serial ${SOURCES})
+set(ENABLE_CJSON_TEST off)
 add_subdirectory(lib/cJSON)
 target_include_directories(pico_ros_serial PUBLIC "${PROJECT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/lib/cJSON")
 
