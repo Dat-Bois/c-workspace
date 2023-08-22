@@ -12,7 +12,7 @@ else()
 endif()
 
 #checking to see if pico-sdk exists
-if(EXISTS "${CMAKE_SOURCE_DIR}/lib/pico-sdk")
+if(EXISTS "${CMAKE_SOURCE_DIR}/lib/pico-sdk/external")
     #inits
     set(PICO_PATH ${CMAKE_SOURCE_DIR}/lib/pico-sdk)
     set(ENV{PICO_SDK_PATH} ${PICO_PATH})

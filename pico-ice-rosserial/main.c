@@ -14,6 +14,12 @@
     #include "pico/stdlib.h"
 #endif
 
+void picoLED(int state) {
+    #ifdef FOUND_PICO_SDK
+        gpio_put(25, state);
+    #endif
+}
+
 cJSON* parser(char *data) {
     cJSON *json = cJSON_Parse(data);
     if (json == NULL) {
@@ -26,19 +32,19 @@ cJSON* parser(char *data) {
 }
 
 void flashError() {
-    for(int i=0; i<5;i++) {
-        gpio_put(25,1);
-        sleep_ms(80);
-        gpio_put(25,0);
-        sleep_ms(80);
-    }
+    #ifdef FOUND_PICO_SDK
+        for(int i=0; i<5;i++) {
+            picoLED(1);
+            sleep_ms(80);
+            picoLED(0);
+            sleep_ms(80);
+        }
+    #endif
 }
 
 void printJson(cJSON *data, bool clear) {
     if(data == NULL) {
-        #ifdef FOUND_PICO_SDK
-            flashError();
-        #endif
+        flashError();
         return;
     }
     char *string = cJSON_Print(data);
@@ -57,7 +63,7 @@ char* getInput() {
 ;    while(1) {
         userInput[0] = getchar();
         if(userInput[0]=='{') {
-            gpio_put(25,1);
+            picoLED(1);
             brackets++;
             strcat(data, userInput);
             while(brackets!=0) {
@@ -71,7 +77,7 @@ char* getInput() {
                 strcat(data, userInput);
             }
             data[strlen(data)] = '\0';
-            gpio_put(25,0);
+            picoLED(0);
             printf("%s\n", data);
             return data;
         }
@@ -88,7 +94,7 @@ int main() {
         stdio_init_all();
         gpio_init(25);
         gpio_set_dir(25, GPIO_OUT);
-        gpio_put(25,0);
+        picoLED(0);
         while(true) {
             printJson(parser(getInput()), true);
         }
