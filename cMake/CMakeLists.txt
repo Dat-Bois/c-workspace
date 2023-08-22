@@ -18,3 +18,10 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES Windows)
 endif()
 
 add_executable(cmakeTest ${SOURCES})
+
+add_subdirectory(lib/cJSON)
+target_link_libraries(cmakeTest PUBLIC cjson)
+target_include_directories(cmakeTest PUBLIC
+                          "${PROJECT_BINARY_DIR}"
+                          "${PROJECT_SOURCE_DIR}/lib/cJSON"
+                          )
