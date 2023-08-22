@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include <time.h>
@@ -12,9 +13,6 @@
 #ifdef FOUND_PICO_SDK
     #include "pico/stdlib.h"
 #endif
-#ifndef FOUND_PICO_SDK
-    #include <stdlib.h>
-#endif
 
 cJSON* parser(char *data) {
     cJSON *json = cJSON_Parse(data);
@@ -27,8 +25,20 @@ cJSON* parser(char *data) {
     return json;
 }
 
+void flashError() {
+    for(int i=0; i<5;i++) {
+        gpio_put(25,1);
+        sleep_ms(80);
+        gpio_put(25,0);
+        sleep_ms(80);
+    }
+}
+
 void printJson(cJSON *data, bool clear) {
     if(data == NULL) {
+        #ifdef FOUND_PICO_SDK
+            flashError();
+        #endif
         return;
     }
     char *string = cJSON_Print(data);
@@ -39,19 +49,52 @@ void printJson(cJSON *data, bool clear) {
     }
 }
 
+char* getInput() {
+    char userInput[2];
+    userInput[1] = '\0';
+    int brackets = 0;
+    char* data = (char*)malloc(200); //sizeof(char) is 1 anyways
+;    while(1) {
+        userInput[0] = getchar();
+        if(userInput[0]=='{') {
+            gpio_put(25,1);
+            brackets++;
+            strcat(data, userInput);
+            while(brackets!=0) {
+                userInput[0] = getchar();
+                if(userInput[0]=='{') {
+                    brackets++;
+                }
+                if(userInput[0]=='}') {
+                    brackets--;
+                }
+                strcat(data, userInput);
+            }
+            data[strlen(data)] = '\0';
+            gpio_put(25,0);
+            printf("%s\n", data);
+            return data;
+        }
+    }
+}
+
+
 int main() {
-    #ifdef FOUND_PICO_SDK
-        stdio_init_all();
-        gpio_init(25);
-        gpio_set_dir(25, GPIO_OUT);
-    #endif
     srand(time(NULL));
     printf("Hello World! You used a %s to compile this code\n", SYSTEMTYPE);
     char test[100] = "{\"Size\": 100}";
     printJson(parser(test), true);
+    #ifdef FOUND_PICO_SDK
+        stdio_init_all();
+        gpio_init(25);
+        gpio_set_dir(25, GPIO_OUT);
+        gpio_put(25,0);
+        while(true) {
+            printJson(parser(getInput()), true);
+        }
+    #endif
     char input[200];
     fgets(input, 200, stdin);
     input[strlen(input)-1] = '\0';
     printJson(parser(input), true);
-
 }

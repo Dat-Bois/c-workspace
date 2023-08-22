@@ -13,12 +13,15 @@ endif()
 
 #checking to see if pico-sdk exists
 if(EXISTS "${CMAKE_SOURCE_DIR}/lib/pico-sdk")
+    #inits
     set(PICO_PATH ${CMAKE_SOURCE_DIR}/lib/pico-sdk)
+    set(ENV{PICO_SDK_PATH} ${PICO_PATH})
+    include(${PICO_PATH}/external/pico_sdk_import.cmake)
+    #helper stuff
     message(STATUS "pico-sdk found at:")
     message(STATUS ${PICO_PATH})
     set(FOUND_PICO_SDK TRUE)
     add_definitions(-DFOUND_PICO_SDK=${FOUND_PICO_SDK}) #lets c program know if pico-sdk was found
-    include(${PICO_PATH}/external/pico_sdk_import.cmake)
 else()
     message(STATUS "pico-sdk not found ; not building for pico")
     set(FOUND_PICO_SDK FALSE)
@@ -31,11 +34,12 @@ set(CMAKE_CXX_STANDARD 17)
 # setup executable
 set(SOURCES main.c)
 add_executable(pico_ros_serial ${SOURCES})
+add_subdirectory(lib/cJSON)
+target_include_directories(pico_ros_serial PUBLIC "${PROJECT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/lib/cJSON")
 
 if(FOUND_PICO_SDK)
-    set(ENV{PICO_SDK_PATH} ${PICO_PATH})
     pico_sdk_init()
-
+    
     SET(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -ffunction-sections -fdata-sections")
     SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -ffunction-sections -fdata-sections")
 
@@ -49,12 +53,7 @@ if(FOUND_PICO_SDK)
 
     # Generate UF2
     pico_add_extra_outputs(pico_ros_serial)
-    target_link_libraries(pico_ros_serial PUBLIC cjson)
-else()
     target_link_libraries(pico_ros_serial PUBLIC cjson pico_stdlib)
+else()
+    target_link_libraries(pico_ros_serial PUBLIC cjson)
 endif()
-
-
-
-add_subdirectory(lib/cJSON)
-target_include_directories(pico_ros_serial PUBLIC "${PROJECT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/lib/cJSON")
