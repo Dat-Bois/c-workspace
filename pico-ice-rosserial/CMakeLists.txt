@@ -1,27 +1,39 @@
 cmake_minimum_required(VERSION 3.12)
 
-project(pico C CXX ASM)
-set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_STANDARD 17)
-
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin) #output executable to bin folder
 
+#check system (doesn't matter right now)
+if(${CMAKE_SYSTEM_NAME} MATCHES Darwin)
+    add_definitions(-DSYSTEMTYPE="Apple MacOS")
+elseif(${CMAKE_SYSTEM_NAME} MATCHES Windows)
+    add_definitions(-DSYSTEMTYPE="Windows PC")
+else()
+    add_definitions(-DSYSTEMTYPE="Linux")
+endif()
 
 #checking to see if pico-sdk exists
-if(EXISTS lib/pico-sdk)
+if(EXISTS "${CMAKE_SOURCE_DIR}/lib/pico-sdk")
     set(PICO_PATH ${CMAKE_SOURCE_DIR}/lib/pico-sdk)
     message(STATUS "pico-sdk found at:")
     message(STATUS ${PICO_PATH})
     set(FOUND_PICO_SDK TRUE)
     add_definitions(-DFOUND_PICO_SDK=${FOUND_PICO_SDK}) #lets c program know if pico-sdk was found
+    include(${PICO_PATH}/external/pico_sdk_import.cmake)
 else()
     message(STATUS "pico-sdk not found ; not building for pico")
     set(FOUND_PICO_SDK FALSE)
 endif()
 
+#----------------------------------
+project(pico_ros_serial C CXX ASM)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+# setup executable
+set(SOURCES main.c)
+add_executable(pico_ros_serial ${SOURCES})
+
 if(FOUND_PICO_SDK)
     set(ENV{PICO_SDK_PATH} ${PICO_PATH})
-    include(ENV{PICO_SDK_PATH}/external/pico_sdk_import.cmake)
     pico_sdk_init()
 
     SET(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -ffunction-sections -fdata-sections")
@@ -37,21 +49,12 @@ if(FOUND_PICO_SDK)
 
     # Generate UF2
     pico_add_extra_outputs(pico_ros_serial)
-endif()
-
-#check system (doesn't matter right now)
-if(${CMAKE_SYSTEM_NAME} MATCHES Darwin)
-    add_definitions(-DSYSTEMTYPE="Apple MacOS")
-elseif(${CMAKE_SYSTEM_NAME} MATCHES Windows)
-    add_definitions(-DSYSTEMTYPE="Windows PC")
+    target_link_libraries(pico_ros_serial PUBLIC cjson)
 else()
-    add_definitions(-DSYSTEMTYPE="Linux")
+    target_link_libraries(pico_ros_serial PUBLIC cjson pico_stdlib)
 endif()
 
-set(SOURCES main.c)
 
-add_executable(pico ${SOURCES})
 
 add_subdirectory(lib/cJSON)
-target_link_libraries(pico PUBLIC cjson)
-target_include_directories(pico PUBLIC "${PROJECT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/lib/cJSON")
+target_include_directories(pico_ros_serial PUBLIC "${PROJECT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/lib/cJSON")

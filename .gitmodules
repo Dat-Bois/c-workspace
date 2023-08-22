@@ -4,3 +4,6 @@
 [submodule "pico-ice-rosserial/lib/cJSON"]
 	path = pico-ice-rosserial/lib/cJSON
 	url = https://github.com/DaveGamble/cJSON.git
+[submodule "pico-ice-rosserial/lib/pico-sdk"]
+	path = pico-ice-rosserial/lib/pico-sdk
+	url = https://github.com/raspberrypi/pico-sdk.git
