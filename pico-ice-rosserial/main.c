@@ -4,6 +4,7 @@
 #include <string.h>
 #include <time.h>
 #include <math.h>
+#include <malloc.h>
 #include "cJSON.h"
 
 #ifndef SYSTEMTYPE
@@ -97,6 +98,7 @@ int main() {
         picoLED(0);
         while(true) {
             printJson(parser(getInput()), true);
+            malloc_stats();
         }
     #endif
     char input[200];
