@@ -1,3 +1,6 @@
 [submodule "cMake/lib/cJSON"]
 	path = cMake/lib/cJSON
 	url = https://github.com/DaveGamble/cJSON.git
+[submodule "pico-ice-rosserial/lib/cJSON"]
+	path = pico-ice-rosserial/lib/cJSON
+	url = https://github.com/DaveGamble/cJSON.git
