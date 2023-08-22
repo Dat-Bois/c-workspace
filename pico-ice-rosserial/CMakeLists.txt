@@ -9,11 +9,11 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin) #output executable t
 
 #checking to see if pico-sdk exists
 if(EXISTS lib/pico-sdk)
-    set(PICO_PATH ${CMAKE_SOURCE_DIR}lib/pico-sdk)
+    set(PICO_PATH ${CMAKE_SOURCE_DIR}/lib/pico-sdk)
     message(STATUS "pico-sdk found at:")
     message(STATUS ${PICO_PATH})
     set(FOUND_PICO_SDK TRUE)
-    add_definitions(-FOUND_PICO_SDK=${FOUND_PICO_SDK}) #lets c program know if pico-sdk was found
+    add_definitions(-DFOUND_PICO_SDK=${FOUND_PICO_SDK}) #lets c program know if pico-sdk was found
 else()
     message(STATUS "pico-sdk not found ; not building for pico")
     set(FOUND_PICO_SDK FALSE)
@@ -23,7 +23,7 @@ if(FOUND_PICO_SDK)
     set(ENV{PICO_SDK_PATH} ${PICO_PATH})
     include(ENV{PICO_SDK_PATH}/external/pico_sdk_import.cmake)
     pico_sdk_init()
-    
+
     SET(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -ffunction-sections -fdata-sections")
     SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -ffunction-sections -fdata-sections")
 
@@ -54,7 +54,4 @@ add_executable(pico ${SOURCES})
 
 add_subdirectory(lib/cJSON)
 target_link_libraries(pico PUBLIC cjson)
-target_include_directories(pico PUBLIC
-                          "${PROJECT_BINARY_DIR}"
-                          "${PROJECT_SOURCE_DIR}/lib/cJSON"
-                          )
+target_include_directories(pico PUBLIC "${PROJECT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/lib/cJSON")

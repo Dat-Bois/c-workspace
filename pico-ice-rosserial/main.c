@@ -1,12 +1,19 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include <time.h>
-#include "lib/cJSON/cJSON.h"
+#include <math.h>
+#include "cJSON.h"
 
 #ifndef SYSTEMTYPE
     #define SYSTEMTYPE "NO SYSTEM NAME"
+#endif
+
+#ifdef FOUND_PICO_SDK
+    #include "pico/stdlib.h"
+#endif
+#ifndef FOUND_PICO_SDK
+    #include <stdlib.h>
 #endif
 
 cJSON* parser(char *data) {
@@ -33,8 +40,13 @@ void printJson(cJSON *data, bool clear) {
 }
 
 int main() {
+    #ifdef FOUND_PICO_SDK
+        stdio_init_all();
+        gpio_init(25);
+        gpio_set_dir(25, GPIO_OUT);
+    #endif
     srand(time(NULL));
-    printf("Hello World! You are using a %s\n", SYSTEMTYPE);
+    printf("Hello World! You used a %s to compile this code\n", SYSTEMTYPE);
     char test[100] = "{\"Size\": 100}";
     printJson(parser(test), true);
     char input[200];
