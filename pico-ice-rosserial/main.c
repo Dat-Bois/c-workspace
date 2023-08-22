@@ -5,8 +5,8 @@
 #include <time.h>
 #include "lib/cJSON/cJSON.h"
 
-#ifndef CMAKEMACROSAMPLE
-    #define CMAKEMACROSAMPLE "NO SYSTEM NAME"
+#ifndef SYSTEMTYPE
+    #define SYSTEMTYPE "NO SYSTEM NAME"
 #endif
 
 cJSON* parser(char *data) {
@@ -34,7 +34,7 @@ void printJson(cJSON *data, bool clear) {
 
 int main() {
     srand(time(NULL));
-    printf("Hello World! You are using a %s\n", CMAKEMACROSAMPLE);
+    printf("Hello World! You are using a %s\n", SYSTEMTYPE);
     char test[100] = "{\"Size\": 100}";
     printJson(parser(test), true);
     char input[200];
